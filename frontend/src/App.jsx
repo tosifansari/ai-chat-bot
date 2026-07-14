@@ -1,7 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 
 function App() {
   // Navigation States: 'login' | 'register' | 'chat'
@@ -43,7 +41,7 @@ function App() {
   const fetchSidebarSessions = async () => {
     if (!user) return;
     try {
-      const response = await axios.get(`https://nexus-chat-engine.onrender.com/api/chat/user/${user.id}`);
+      const response = await axios.get(`http://localhost:5000/api/chat/user/${user.id}`);
       setChatSessions(response.data);
     } catch (error) {
       console.error("Error fetching sidebar sessions:", error);
@@ -60,7 +58,7 @@ function App() {
   const loadActiveChat = async (id) => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`https://nexus-chat-engine.onrender.com/api/chat/${id}`);
+      const response = await axios.get(`http://localhost:5000/api/chat/${id}`);
       if (response.data && response.data.messages) {
         setChatId(id);
         const formattedMessages = response.data.messages.map(msg => ({
@@ -84,15 +82,11 @@ function App() {
 
     try {
       if (screen === 'register') {
-        // FIXED: Correct endpoint mapping for user sign-up
-        const res = await axios.post('https://nexus-chat-engine.onrender.com/api/auth/register', formData);
+        const res = await axios.post('http://localhost:5000/api/auth/register', formData);
         setAuthMessage(res.data.message);
-        setTimeout(() => {
-          setScreen('login');
-          setFormData({ name: '', email: '', password: '' });
-        }, 1500);
+        setTimeout(() => setScreen('login'), 1500);
       } else {
-        const res = await axios.post('https://nexus-chat-engine.onrender.com/api/auth/login', {
+        const res = await axios.post('http://localhost:5000/api/auth/login', {
           email: formData.email,
           password: formData.password
         });
@@ -126,9 +120,9 @@ function App() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post('https://nexus-chat-engine.onrender.com/api/chat', {
+      const response = await axios.post('http://localhost:5000/api/chat', {
         message: userMessage,
-        userId: user.id, 
+        userId: user.id, // Real user database ID mapped
         chatId: chatId 
       });
 
@@ -234,7 +228,7 @@ function App() {
           </div>
         </div>
 
-        {/* User Profile Info */}
+        {/* Dynamic User Profile Info from MongoDB via Auth State */}
         <div className="p-4 bg-[#111217] border-t border-[#22242a]/60 flex items-center justify-between min-w-0">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="h-8 w-8 rounded-full bg-[#1e202a] border border-slate-700/50 flex items-center justify-center font-semibold text-xs text-indigo-300 uppercase shrink-0">
@@ -274,37 +268,8 @@ function App() {
                   <div className="h-7 w-7 rounded-lg bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center text-xs font-bold text-white shrink-0">AI</div>
                 )}
 
-                {/* Markdown Integrated Box Area */}
                 <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${msg.role === 'user' ? 'bg-indigo-600 text-white font-medium shadow-lg shadow-indigo-600/10' : 'bg-[#16171d]/80 text-slate-200 border border-[#22242a]/50'}`}>
-                  {msg.role === 'user' ? (
-                    <p className="whitespace-pre-wrap">{msg.text}</p>
-                  ) : (
-                    <div className="prose prose-invert max-w-none text-slate-200 text-sm space-y-2">
-                      <ReactMarkdown 
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                          code({ node, inline, className, children, ...props }) {
-                            return !inline ? (
-                              <div className="relative my-3 rounded-xl overflow-hidden border border-[#22242a] bg-[#0d0e12]">
-                                <div className="flex items-center justify-between px-4 py-1.5 bg-[#111217] border-b border-[#22242a] text-[11px] text-slate-400 font-mono">
-                                  <span>code block</span>
-                                </div>
-                                <pre className="p-4 overflow-x-auto text-xs font-mono text-emerald-400 bg-[#0d0e12]">
-                                  <code {...props}>{children}</code>
-                                </pre>
-                              </div>
-                            ) : (
-                              <code className="bg-[#20222c] px-1.5 py-0.5 rounded text-indigo-300 font-mono text-xs" {...props}>
-                                {children}
-                              </code>
-                            );
-                          }
-                        }}
-                      >
-                        {msg.text}
-                      </ReactMarkdown>
-                    </div>
-                  )}
+                  <p className="whitespace-pre-wrap">{msg.text}</p>
                 </div>
               </div>
             ))}
