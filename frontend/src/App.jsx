@@ -43,7 +43,7 @@ function App() {
   const fetchSidebarSessions = async () => {
     if (!user) return;
     try {
-      const response = await axios.get(`http://localhost:5000/api/chat/user/${user.id}`);
+      const response = await axios.get(`https://nexus-chat-engine.onrender.com/api/chat/user/${user.id}`);
       setChatSessions(response.data);
     } catch (error) {
       console.error("Error fetching sidebar sessions:", error);
@@ -60,7 +60,7 @@ function App() {
   const loadActiveChat = async (id) => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5000/api/chat/${id}`);
+      const response = await axios.get(`https://nexus-chat-engine.onrender.com/api/chat/${id}`);
       if (response.data && response.data.messages) {
         setChatId(id);
         const formattedMessages = response.data.messages.map(msg => ({
@@ -84,11 +84,15 @@ function App() {
 
     try {
       if (screen === 'register') {
-        const res = await axios.post('http://localhost:5000/api/auth/register', formData);
+        // FIXED: Correct endpoint mapping for user sign-up
+        const res = await axios.post('https://nexus-chat-engine.onrender.com/api/auth/register', formData);
         setAuthMessage(res.data.message);
-        setTimeout(() => setScreen('login'), 1500);
+        setTimeout(() => {
+          setScreen('login');
+          setFormData({ name: '', email: '', password: '' });
+        }, 1500);
       } else {
-        const res = await axios.post('http://localhost:5000/api/auth/login', {
+        const res = await axios.post('https://nexus-chat-engine.onrender.com/api/auth/login', {
           email: formData.email,
           password: formData.password
         });
@@ -122,7 +126,7 @@ function App() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/chat', {
+      const response = await axios.post('https://nexus-chat-engine.onrender.com/api/chat', {
         message: userMessage,
         userId: user.id, 
         chatId: chatId 
