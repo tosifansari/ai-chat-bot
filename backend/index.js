@@ -14,7 +14,7 @@ connectDB();
 
 // CORS Settings Middleware for frontend connection
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: ['http://localhost:5173', 'https://ai-chat-bot-delta-lilac.vercel.app'],
   credentials: true
 }));
 
