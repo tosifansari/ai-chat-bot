@@ -68,10 +68,11 @@ function App() {
     e.preventDefault();
     setAuthError('');
     try {
-      const res = await axios.post(`${API_URL}/login`, {
-        email: formData.email,
-        password: formData.password
-      });
+      const res = await axios.post(`${API_URL}/register`, {
+  name: formData.name, // ✅ Ab backend ko exact 'name' milega
+  email: formData.email,
+  password: formData.password
+});
       localStorage.setItem('nexus_user', JSON.stringify(res.data.user));
       setUser(res.data.user);
       setScreen('chat');
