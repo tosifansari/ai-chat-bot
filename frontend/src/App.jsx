@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import ReactMarkdown from 'react-markdown'; // ✅ Premium Markdown Parser
 
 // ==========================================
 // CONFIGURATION: Set Your Production Backend URL
@@ -57,7 +58,7 @@ function App() {
     setAuthMessage('');
     try {
       await axios.post(`${API_URL}/auth/register`, {
-        name: formData.name,      // Synchronized with Backend Mongoose schema
+        name: formData.name,      
         email: formData.email,
         password: formData.password
       });
@@ -107,14 +108,13 @@ function App() {
 
     const userText = input;
     setInput('');
-    // Push user's message directly to dynamic array state
     setMessages(prev => [...prev, { role: 'user', text: userText }]);
     setIsLoading(true);
 
     try {
       const res = await axios.post(`${API_URL}/chat`, {
         message: userText,
-        userId: user?._id || user?.id // ✅ Added missing userId to pass backend validation check
+        userId: user?._id || user?.id 
       });
       
       const botReply = res.data.reply || res.data.response || "Server responded, but could not parse the format.";
@@ -132,11 +132,10 @@ function App() {
   if (screen === 'login' || screen === 'register') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0a0b10] text-white p-4 selection:bg-indigo-500/30">
-        {/* Background Glowing Ambiance */}
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-[120px] pointer-events-none"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-[120px] pointer-events-none"></div>
 
-        <div className="w-full max-w-md bg-[#11131e]/80 border border-gray-800/80 p-8 rounded-2xl shadow-2xl backdrop-blur-xl z-10 transition-all duration-300 hover:border-gray-700/50">
+        <div className="w-full max-w-md bg-[#11131e]/80 border border-gray-800/80 p-8 rounded-2xl shadow-2xl backdrop-blur-xl z-10">
           <div className="flex justify-center mb-4">
             <div className="w-12 h-12 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-bold text-xl shadow-inner">
               Ω
@@ -148,12 +147,12 @@ function App() {
           <p className="text-center text-xs text-gray-500 mb-6 font-medium">Access the Nexus Chat Core Engine</p>
 
           {authError && (
-            <div className="bg-red-950/40 border border-red-500/50 text-red-200 p-3.5 rounded-xl mb-4 text-xs font-medium text-center animate-fade-in">
+            <div className="bg-red-950/40 border border-red-500/50 text-red-200 p-3.5 rounded-xl mb-4 text-xs font-medium text-center">
               ⚠️ {authError}
             </div>
           )}
           {authMessage && (
-            <div className="bg-emerald-950/40 border border-emerald-500/50 text-emerald-200 p-3.5 rounded-xl mb-4 text-xs font-medium text-center animate-fade-in">
+            <div className="bg-emerald-950/40 border border-emerald-500/50 text-emerald-200 p-3.5 rounded-xl mb-4 text-xs font-medium text-center">
               ✅ {authMessage}
             </div>
           )}
@@ -168,7 +167,7 @@ function App() {
                   value={formData.name} 
                   onChange={handleInputChange} 
                   placeholder="Enter your name"
-                  className="w-full bg-[#08090f] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-gray-600" 
+                  className="w-full bg-[#08090f] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all placeholder:text-gray-600" 
                   required 
                 />
               </div>
@@ -181,7 +180,7 @@ function App() {
                 value={formData.email} 
                 onChange={handleInputChange} 
                 placeholder="example@gmail.com"
-                className="w-full bg-[#08090f] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-gray-600" 
+                className="w-full bg-[#08090f] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all placeholder:text-gray-600" 
                 required 
               />
             </div>
@@ -193,11 +192,11 @@ function App() {
                 value={formData.password} 
                 onChange={handleInputChange} 
                 placeholder="••••••••"
-                className="w-full bg-[#08090f] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-gray-600" 
+                className="w-full bg-[#08090f] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all placeholder:text-gray-600" 
                 required 
               />
             </div>
-            <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3.5 rounded-xl font-semibold text-sm transition-all shadow-lg shadow-indigo-950/50 hover:shadow-indigo-500/20 active:scale-[0.98] mt-2">
+            <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3.5 rounded-xl font-semibold text-sm transition-all shadow-lg shadow-indigo-950/50 mt-2">
               {screen === 'login' ? 'Sign In to Workspace' : 'Initialize Nexus Profile'}
             </button>
           </form>
@@ -238,7 +237,7 @@ function App() {
           
           <button 
             onClick={() => setMessages([{ role: 'model', text: 'Namaste! Main aapka Nexus AI Assistant hoon. Main aapki kya madad kar sakta hoon?' }])} 
-            className="w-full bg-[#141622] hover:bg-[#1a1d2e] text-xs font-semibold py-3 px-4 rounded-xl border border-gray-800 hover:border-gray-700 transition-all duration-200 text-left flex items-center justify-between"
+            className="w-full bg-[#141622] hover:bg-[#1a1d2e] text-xs font-semibold py-3 px-4 rounded-xl border border-gray-800 hover:border-gray-700 transition-all text-left flex items-center justify-between"
           >
             <span>New Chat Session</span>
             <span className="text-gray-500 text-lg">+</span>
@@ -253,7 +252,7 @@ function App() {
           </div>
           <button 
             onClick={handleLogout} 
-            className="w-full bg-red-950/20 hover:bg-red-950/40 text-red-200 text-xs font-bold py-2.5 px-4 rounded-lg border border-red-900/30 hover:border-red-900/50 transition-all text-center"
+            className="w-full bg-red-950/20 hover:bg-red-950/40 text-red-200 text-xs font-bold py-2.5 px-4 rounded-lg border border-red-900/30 transition-all text-center"
           >
             Log Out Workspace
           </button>
@@ -280,20 +279,23 @@ function App() {
         {/* Messaging Layout Stream */}
         <div className="flex-1 overflow-y-auto p-6 space-y-5 max-w-3xl w-full mx-auto scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-transparent">
           {messages.map((msg, index) => (
-            <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}>
-              <div className={`max-w-[80%] px-4.5 py-3.5 rounded-2xl text-sm leading-relaxed shadow-sm transition-all ${
+            <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+              <div className={`max-w-[85%] px-5 py-3.5 rounded-2xl text-sm leading-relaxed shadow-sm transition-all ${
                 msg.role === 'user' 
                   ? 'bg-indigo-600 text-white rounded-tr-none font-medium' 
                   : 'bg-[#11131e] border border-gray-800/80 text-gray-200 rounded-tl-none font-normal'
               }`}>
-                {msg.text}
+                {/* PRO-RENDER: Replaced plain string text with ReactMarkdown compiler */}
+                <ReactMarkdown className="prose prose-invert max-w-none text-sm space-y-2 prose-p:leading-relaxed prose-ul:list-disc prose-ul:pl-4">
+                  {msg.text}
+                </ReactMarkdown>
               </div>
             </div>
           ))}
           
-          {/* Dynamic Typist Bubble (Loader) */}
+          {/* Dynamic Typist Bubble */}
           {isLoading && (
-            <div className="flex justify-start animate-pulse">
+            <div className="flex justify-start">
               <div className="bg-[#11131e] border border-gray-800/80 text-gray-400 px-5 py-3.5 rounded-2xl rounded-tl-none text-sm flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce"></span>
                 <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce [animation-delay:0.2s]"></span>
@@ -317,13 +319,13 @@ function App() {
             />
             <button
               type="submit"
-              className="bg-indigo-600 hover:bg-indigo-500 text-white px-7 py-3.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-indigo-950/50 hover:shadow-indigo-500/20 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
+              className="bg-indigo-600 hover:bg-indigo-500 text-white px-7 py-3.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-indigo-950/50 disabled:opacity-50"
               disabled={isLoading || !input.trim()}
             >
               Send
             </button>
           </form>
-          <p className="text-center text-[10px] text-gray-600 mt-2.5 tracking-wider uppercase font-medium">Nexus Engine v1.1.2 Production Build</p>
+          <p className="text-center text-[10px] text-gray-600 mt-2.5 tracking-wider uppercase font-medium">Nexus Engine v1.2.0 Production Build</p>
         </div>
       </div>
     </div>
