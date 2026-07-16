@@ -113,12 +113,14 @@ function App() {
 
     try {
       const res = await axios.post(`${API_URL}/chat`, {
-        message: userText
+        message: userText,
+        userId: user?._id || user?.id // ✅ Added missing userId to pass backend validation check
       });
+      
       const botReply = res.data.reply || res.data.response || "Server responded, but could not parse the format.";
       setMessages(prev => [...prev, { role: 'model', text: botReply }]);
     } catch (err) {
-      setMessages(prev => [...prev, { role: 'model', text: "Error: Connection timed out. Please check your backend engine." }]);
+      setMessages(prev => [...prev, { role: 'model', text: "Error: Connection timed out. Please check your backend engine or GROQ key." }]);
     } finally {
       setIsLoading(false);
     }
@@ -246,7 +248,7 @@ function App() {
         <div className="bg-[#11131e] border border-gray-800/50 p-4 rounded-xl space-y-3">
           <div className="overflow-hidden">
             <p className="text-[10px] text-gray-500 font-bold tracking-wider uppercase">ACTIVE USER</p>
-            <p className="text-xs font-semibold text-gray-300 truncate mt-0.5">{user?.name || 'Tom'}</p>
+            <p className="text-xs font-semibold text-gray-300 truncate mt-0.5">{user?.name || 'User'}</p>
             <p className="text-[10px] text-gray-500 truncate">{user?.email}</p>
           </div>
           <button 
