@@ -46,7 +46,9 @@ A premium, highly responsive Full-Stack AI Chat Application featuring secure ses
 
 ### 1. Clone the Workspace Repository
 ```bash
-git clone [https://github.com/YOUR_GITHUB_USERNAME/ai-chat-app.git](https://github.com/YOUR_GITHUB_USERNAME/ai-chat-app.git)
+```bash
+git clone [https://github.com/tosifansari/ai-chat-bot.git](https://github.com/tosifansari/ai-chat-bot.git)
+cd ai-chat-bot
 cd ai-chat-app
 2. Configure Backend Engine
 Navigate to the backend directory, install the required packages, create an .env file, and fill in your keys:
