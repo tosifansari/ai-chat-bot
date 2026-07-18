@@ -3,8 +3,9 @@ import { handleChat, getUserChats, getChatById } from '../controllers/chatContro
 
 const router = express.Router();
 
-router.post('/', handleChat);                
-router.get('/user/:userId', getUserChats);   
-router.get('/:chatId', getChatById);         
+// 🎯 Mapping exactly to match frontend fetch requirements
+router.post('/send', handleChat);
+router.get('/user/:userId', getUserChats);
+router.get('/session/:chatId', getChatById);
 
-export default router; 
+export default router;

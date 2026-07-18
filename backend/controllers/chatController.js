@@ -1,6 +1,6 @@
 import Chat from '../models/Chat.js';
 
-// 1. Send Message & Handle Chat (Existing Function)
+// 1. Send Message & Handle Chat Pipeline
 export const handleChat = async (req, res) => {
   try {
     const { message, chatId, userId } = req.body;
@@ -22,37 +22,47 @@ export const handleChat = async (req, res) => {
       });
     }
 
+    // Mapping history to match standard OpenAI/Groq formats safely
     const history = chat.messages.map(msg => ({
       role: msg.role === 'model' ? 'assistant' : 'user',
-      content: msg.parts[0].text
+      content: msg.parts && msg.parts[0] ? msg.parts[0].text : ''
     }));
 
     const url = "https://api.groq.com/openai/v1/chat/completions";
-    const apiKey = process.env.GROQ_API_KEY;
+    const apiKey = "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";
 
-    const apiResponse = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
-        messages: [
-          ...history,
-          { role: 'user', content: message }
-        ]
-      })
-    });
+    let aiResponseText = "";
 
-    const data = await apiResponse.json();
+    try {
+      const apiResponse = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile", // 🔥 PRODUCTION STABLE CORE CHOSEN
+          messages: [
+            ...history,
+            { role: 'user', content: message }
+          ]
+        })
+      });
 
-    if (data.error) {
-      throw new Error(data.error.message);
+      const data = await apiResponse.json();
+
+      if (data.error || !data.choices) {
+        console.error("Groq Engine Core Warning:", data.error);
+        aiResponseText = `⚠️ Groq API Warning: ${data.error?.message || 'Response mismatch'}`;
+      } else {
+        aiResponseText = data.choices[0].message.content;
+      }
+    } catch (apiErr) {
+      console.error("External Network Pipeline Timeout:", apiErr);
+      aiResponseText = "🤖 Connection Fallback: Server is online, but external API failed to respond.";
     }
 
-    const aiResponseText = data.choices[0].message.content;
-
+    // Database push operations remain 100% safe
     chat.messages.push({ role: 'user', parts: [{ text: message }] });
     chat.messages.push({ role: 'model', parts: [{ text: aiResponseText }] });
     await chat.save();
@@ -64,16 +74,15 @@ export const handleChat = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Groq Hack Error:', error);
-    res.status(500).json({ message: error.message });
+    console.error('Fatal Backend Crash Stopped:', error);
+    res.status(500).json({ message: "Internal Workspace Error: " + error.message });
   }
 };
 
-// 2. NEW: Fetch All Chat Sessions for Sidebar List
+// 2. Fetch All Chat Sessions for Sidebar List
 export const getUserChats = async (req, res) => {
   try {
     const { userId } = req.params;
-    // Sirf chatId aur title nikalenge, heavy messages array ko skip karenge quick load ke liye
     const chats = await Chat.find({ userId }).select('title createdAt').sort({ updatedAt: -1 });
     res.status(200).json(chats);
   } catch (error) {
@@ -81,7 +90,7 @@ export const getUserChats = async (req, res) => {
   }
 };
 
-// 3. NEW: Fetch Particular Chat Details when Clicked
+// 3. Fetch Particular Chat Details when Clicked
 export const getChatById = async (req, res) => {
   try {
     const { chatId } = req.params;

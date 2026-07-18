@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const messageSchema = new mongoose.Schema({
   role: {
     type: String,
-    enum: ['user', 'model'], // 'user' matlab tum, 'model' matlab Gemini AI
+    enum: ['user', 'model'], // 'user' matlab aap, 'model' matlab Gemini/Llama AI
     required: true
   },
   parts: [{
@@ -14,14 +14,14 @@ const messageSchema = new mongoose.Schema({
 const chatSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // Yeh chat kis user ki hai usse link karne ke liye
+    ref: 'User', 
     required: true
   },
   title: {
     type: String,
     default: 'New Chat'
   },
-  messages: [messageSchema] // Saari baatein is array me save hongi
+  messages: [messageSchema]
 }, { timestamps: true });
 
 const Chat = mongoose.model('Chat', chatSchema);
