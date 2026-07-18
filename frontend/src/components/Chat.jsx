@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 
-// Local test environment endpoint routing
-const API_BASE = "http://localhost:5000/api/chat"; 
+// ✅ FIXED: Live production Render endpoint setup correctly
+const API_BASE_URL = "https://nexus-chat-engine.onrender.com/api/chat"; 
 
 export default function Chat({ userId, userObj, onLogout }) {
   const [messages, setMessages] = useState([]);
@@ -29,7 +29,8 @@ export default function Chat({ userId, userObj, onLogout }) {
 
   const fetchSidebarHistory = async () => {
     try {
-      const res = await axios.get(`${API_BASE}/user/${userId}`);
+      // ✅ FIXED: Using exact matching constant variable API_BASE_URL
+      const res = await axios.get(`${API_BASE_URL}/user/${userId}`);
       setSidebarChats(res.data);
     } catch (err) {
       console.error("Error fetching sidebar list:", err);
@@ -40,13 +41,14 @@ export default function Chat({ userId, userObj, onLogout }) {
   const loadChatSession = async (selectedChatId) => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API_BASE}/session/${selectedChatId}`);
+      // ✅ FIXED: Using exact matching constant variable API_BASE_URL
+      const res = await axios.get(`${API_BASE_URL}/session/${selectedChatId}`);
       setChatId(selectedChatId);
       
       // MongoDB format array schema data manipulation to UI structure
       const formattedMessages = res.data.messages.map(msg => ({
         role: msg.role === 'model' ? 'ai' : 'user',
-        text: msg.parts[0].text
+        text: msg.parts && msg.parts[0] ? msg.parts[0].text : ''
       }));
       setMessages(formattedMessages);
     } catch (err) {
@@ -75,7 +77,8 @@ export default function Chat({ userId, userObj, onLogout }) {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${API_BASE}/send`, {
+      // ✅ FIXED: Using exact matching constant variable API_BASE_URL targeting /send route
+      const response = await axios.post(`${API_BASE_URL}/send`, {
         message: userText,
         userId: userId,
         chatId: chatId
@@ -187,7 +190,6 @@ export default function Chat({ userId, userObj, onLogout }) {
                     ? 'bg-indigo-600 text-white rounded-tr-none font-medium' 
                     : 'bg-[#11131e] border border-gray-800/80 text-gray-200 rounded-tl-none font-normal'
                 }`}>
-                  {/* 🔥 FIXED MARKOV CRASH WRAPPER DIV */}
                   <div className="prose prose-invert max-w-none text-sm space-y-2">
                     <ReactMarkdown>
                       {msg.text}
