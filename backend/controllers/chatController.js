@@ -29,7 +29,9 @@ export const handleChat = async (req, res) => {
     }));
 
     const url = "https://api.groq.com/openai/v1/chat/completions";
-    const apiKey = "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";
+    
+    // ✅ FIXED: Using process.env to keep the key safe from GitHub scanning rules
+    const apiKey = process.env.GROQ_API_KEY;
 
     let aiResponseText = "";
 
@@ -41,7 +43,7 @@ export const handleChat = async (req, res) => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: "llama-3.3-70b-versatile", // 🔥 PRODUCTION STABLE CORE CHOSEN
+          model: "llama-3.3-70b-versatile", 
           messages: [
             ...history,
             { role: 'user', content: message }
